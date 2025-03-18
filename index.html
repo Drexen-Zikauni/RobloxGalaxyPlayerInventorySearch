@@ -9,9 +9,9 @@
             const query = document.getElementById('searchQuery').value;
             const repoOwner = 'AD-Drexen-Zikauni';
             const repoName = 'RobloxGalaxyPlayerInventoriesDatabase';
-            const baseURL = `https://api.github.com/repos/${repoOwner}/${repoName}/`;
+            const baseURL = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/`;
 
-            // GitHub API call to get contents of the 'database' folder
+            // GitHub API call to get the contents of the repository (instead of a specific folder)
             const response = await fetch(baseURL);
             const directories = await response.json();
 
