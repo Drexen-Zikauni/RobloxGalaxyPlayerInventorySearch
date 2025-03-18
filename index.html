@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Database</title>
+    <script>
+        async function searchDatabase() {
+            const query = document.getElementById('searchQuery').value;
+            const folderMapping = {
+                1: 'folder1',
+                2: 'folder2',
+                3: 'folder3',
+                4: 'folder4',
+                5: 'folder5',
+                6: 'folder6',
+                7: 'folder7',
+                8: 'folder8'
+            };
+
+            // Simulated file search process (replace this with actual data fetching)
+            let found = false;
+            let folder = '';
+            let file = '';
+            let fileContent = '';
+
+            // Example of how data might be structured for client-side use
+            const indexData = [
+                { folder: 'folder1', files: ['file1.txt', 'file2.txt'] },
+                { folder: 'folder2', files: ['file3.txt', 'file4.txt'] },
+                { folder: 'folder3', files: ['file5.txt', 'file6.txt'] },
+                { folder: 'folder4', files: ['file7.txt', 'file8.txt'] },
+                { folder: 'folder5', files: ['file9.txt', 'file10.txt'] },
+                { folder: 'folder6', files: ['file11.txt', 'file12.txt'] },
+                { folder: 'folder7', files: ['file13.txt', 'file14.txt'] },
+                { folder: 'folder8', files: ['file15.txt', 'file16.txt'] },
+            ];
+
+            // Loop through mock indexes to simulate searching for the string
+            for (let i = 0; i < indexData.length; i++) {
+                const folderData = indexData[i];
+                folderData.files.forEach((filename) => {
+                    if (filename.includes(query)) { // Simulating a search for query in the filename
+                        found = true;
+                        folder = folderMapping[i + 1]; // +1 to match the folder number
+                        file = filename;
+                        fileContent = `Contents of ${filename} in ${folder}`; // Example content
+                    }
+                });
+
+                if (found) break;
+            }
+
+            if (found) {
+                document.getElementById('result').innerHTML = `
+                    <h3>File Found:</h3>
+                    <p><strong>Folder:</strong> ${folder}</p>
+                    <p><strong>File:</strong> ${file}</p>
+                    <pre>${fileContent}</pre>
+                `;
+            } else {
+                document.getElementById('result').innerHTML = "<p>No file found for the query.</p>";
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Search Database</h1>
+    <input type="text" id="searchQuery" placeholder="Enter search string" />
+    <button onclick="searchDatabase()">Search</button>
+
+    <div id="result"></div>
+</body>
+</html>
