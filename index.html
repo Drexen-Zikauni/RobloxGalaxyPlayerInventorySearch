@@ -7,50 +7,45 @@
     <script>
         async function searchDatabase() {
             const query = document.getElementById('searchQuery').value;
-            const folderMapping = {
-                1: 'folder1',
-                2: 'folder2',
-                3: 'folder3',
-                4: 'folder4',
-                5: 'folder5',
-                6: 'folder6',
-                7: 'folder7',
-                8: 'folder8'
-            };
+            const repoOwner = 'AD-Drexen-Zikauni';
+            const repoName = 'RobloxGalaxyPlayerInventoriesDatabase';
+            const baseURL = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/database`;
 
-            // Simulated file search process (replace this with actual data fetching)
+            // GitHub API call to get contents of the 'database' folder
+            const response = await fetch(baseURL);
+            const directories = await response.json();
+
             let found = false;
             let folder = '';
             let file = '';
             let fileContent = '';
 
-            // Example of how data might be structured for client-side use
-            const indexData = [
-                { folder: 'folder1', files: ['file1.txt', 'file2.txt'] },
-                { folder: 'folder2', files: ['file3.txt', 'file4.txt'] },
-                { folder: 'folder3', files: ['file5.txt', 'file6.txt'] },
-                { folder: 'folder4', files: ['file7.txt', 'file8.txt'] },
-                { folder: 'folder5', files: ['file9.txt', 'file10.txt'] },
-                { folder: 'folder6', files: ['file11.txt', 'file12.txt'] },
-                { folder: 'folder7', files: ['file13.txt', 'file14.txt'] },
-                { folder: 'folder8', files: ['file15.txt', 'file16.txt'] },
-            ];
+            // Loop through directories and check files
+            for (const directory of directories) {
+                if (directory.type === 'dir') {  // Check if it's a folder
+                    const folderName = directory.name;
+                    const folderResponse = await fetch(directory.url);
+                    const filesInFolder = await folderResponse.json();
 
-            // Loop through mock indexes to simulate searching for the string
-            for (let i = 0; i < indexData.length; i++) {
-                const folderData = indexData[i];
-                folderData.files.forEach((filename) => {
-                    if (filename.includes(query)) { // Simulating a search for query in the filename
-                        found = true;
-                        folder = folderMapping[i + 1]; // +1 to match the folder number
-                        file = filename;
-                        fileContent = `Contents of ${filename} in ${folder}`; // Example content
+                    // Loop through files in the folder
+                    for (const fileEntry of filesInFolder) {
+                        if (fileEntry.type === 'file' && fileEntry.name.includes(query)) {  // Search file name
+                            const fileDataResponse = await fetch(fileEntry.download_url);
+                            const fileData = await fileDataResponse.text();
+
+                            found = true;
+                            folder = folderName;
+                            file = fileEntry.name;
+                            fileContent = fileData;
+                            break;
+                        }
                     }
-                });
 
-                if (found) break;
+                    if (found) break;
+                }
             }
 
+            // Display results
             if (found) {
                 document.getElementById('result').innerHTML = `
                     <h3>File Found:</h3>
