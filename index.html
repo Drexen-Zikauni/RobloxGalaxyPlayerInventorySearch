@@ -45,14 +45,27 @@
                 }
             }
 
-            // Display results
+            // If file is found, parse the content and format it
             if (found) {
-                document.getElementById('result').innerHTML = `
-                    <h3>File Found:</h3>
-                    <p><strong>Folder:</strong> ${folder}</p>
-                    <p><strong>File:</strong> ${file}</p>
-                    <pre>${fileContent}</pre>
-                `;
+                try {
+                    const parsedContent = JSON.parse(fileContent);
+
+                    // Format the output as requested
+                    const resultHTML = `
+                        <h3>${query.toUpperCase()}</h3>
+                        <h4>SHIPS</h4>
+                        <ul>
+                            ${parsedContent.ships.map(ship => `<li>${ship}</li>`).join('')}
+                        </ul>
+                        <h4>DEAD SHIPS</h4>
+                        <ul>
+                            ${parsedContent["dead ships"].map(deadShip => `<li>${deadShip}</li>`).join('')}
+                        </ul>
+                    `;
+                    document.getElementById('result').innerHTML = resultHTML;
+                } catch (error) {
+                    document.getElementById('result').innerHTML = "<p>Error parsing the file content.</p>";
+                }
             } else {
                 document.getElementById('result').innerHTML = "<p>No file found for the query.</p>";
             }
