@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search Database</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
         async function searchDatabase() {
             const query = document.getElementById('searchQuery').value;
@@ -11,72 +12,72 @@
             const repoName = 'RobloxGalaxyPlayerInventoriesDatabase';
             const baseURL = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/`;
 
-            // GitHub API call to get the contents of the repository (instead of a specific folder)
-            const response = await fetch(baseURL);
-            const directories = await response.json();
+            document.getElementById('result').innerHTML = '<p class="text-gray-500">Searching...</p>';
 
-            let found = false;
-            let folder = '';
-            let file = '';
-            let fileContent = '';
+            try {
+                const response = await fetch(baseURL);
+                const directories = await response.json();
 
-            // Loop through directories and check files
-            for (const directory of directories) {
-                if (directory.type === 'dir') {  // Check if it's a folder
-                    const folderName = directory.name;
-                    const folderResponse = await fetch(directory.url);
-                    const filesInFolder = await folderResponse.json();
+                let found = false;
+                let folder = '';
+                let file = '';
+                let fileContent = '';
 
-                    // Loop through files in the folder
-                    for (const fileEntry of filesInFolder) {
-                        if (fileEntry.type === 'file' && fileEntry.name.includes(query)) {  // Search file name
-                            const fileDataResponse = await fetch(fileEntry.download_url);
-                            const fileData = await fileDataResponse.text();
+                for (const directory of directories) {
+                    if (directory.type === 'dir') {
+                        const folderResponse = await fetch(directory.url);
+                        const filesInFolder = await folderResponse.json();
 
-                            found = true;
-                            folder = folderName;
-                            file = fileEntry.name;
-                            fileContent = fileData;
-                            break;
+                        for (const fileEntry of filesInFolder) {
+                            if (fileEntry.type === 'file' && fileEntry.name.includes(query)) {
+                                const fileDataResponse = await fetch(fileEntry.download_url);
+                                fileContent = await fileDataResponse.text();
+                                found = true;
+                                folder = directory.name;
+                                file = fileEntry.name;
+                                break;
+                            }
                         }
+                        if (found) break;
                     }
-
-                    if (found) break;
                 }
-            }
 
-            // If file is found, parse the content and format it
-            if (found) {
-                try {
-                    const parsedContent = JSON.parse(fileContent);
-
-                    // Format the output as requested
-                    const resultHTML = `
-                        <h3>${query.toUpperCase()}</h3>
-                        <h4>SHIPS</h4>
-                        <ul>
-                            ${parsedContent.ships.map(ship => `<li>${ship}</li>`).join('')}
-                        </ul>
-                        <h4>DEAD SHIPS</h4>
-                        <ul>
-                            ${parsedContent["dead ships"].map(deadShip => `<li>${deadShip}</li>`).join('')}
-                        </ul>
-                    `;
-                    document.getElementById('result').innerHTML = resultHTML;
-                } catch (error) {
-                    document.getElementById('result').innerHTML = "<p>Error parsing the file content.</p>";
+                if (found) {
+                    try {
+                        const parsedContent = JSON.parse(fileContent);
+                        document.getElementById('result').innerHTML = `
+                            <div class="bg-white p-6 rounded-lg shadow-md">
+                                <h3 class="text-xl font-semibold">${query.toUpperCase()}</h3>
+                                <h4 class="text-lg mt-4 font-medium">SHIPS</h4>
+                                <ul class="list-disc list-inside text-gray-700">
+                                    ${parsedContent.ships.map(ship => `<li>${ship}</li>`).join('')}
+                                </ul>
+                                <h4 class="text-lg mt-4 font-medium">DEAD SHIPS</h4>
+                                <ul class="list-disc list-inside text-red-500">
+                                    ${parsedContent["dead ships"].map(deadShip => `<li>${deadShip}</li>`).join('')}
+                                </ul>
+                            </div>
+                        `;
+                    } catch (error) {
+                        document.getElementById('result').innerHTML = "<p class='text-red-500'>Error parsing the file content.</p>";
+                    }
+                } else {
+                    document.getElementById('result').innerHTML = "<p class='text-gray-500'>No file found for the query.</p>";
                 }
-            } else {
-                document.getElementById('result').innerHTML = "<p>No file found for the query.</p>";
+            } catch (error) {
+                document.getElementById('result').innerHTML = "<p class='text-red-500'>Error fetching data.</p>";
             }
         }
     </script>
 </head>
-<body>
-    <h1>Search Database</h1>
-    <input type="text" id="searchQuery" placeholder="Enter Roblox Username" />
-    <button onclick="searchDatabase()">Search</button>
-
-    <div id="result"></div>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
+        <h1 class="text-2xl font-semibold text-center">Search Database</h1>
+        <div class="mt-4">
+            <input type="text" id="searchQuery" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter Roblox Username" />
+            <button onclick="searchDatabase()" class="w-full mt-3 bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition">Search</button>
+        </div>
+        <div id="result" class="mt-6"></div>
+    </div>
 </body>
 </html>
