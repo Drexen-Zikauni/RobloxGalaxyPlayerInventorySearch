@@ -6,6 +6,23 @@
     <title>Search Database</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
+        async function fetchLastUpdated() {
+            const repoOwner = 'AD-Drexen-Zikauni';
+            const repoName = 'RobloxGalaxyPlayerInventoriesDatabase';
+            const commitsURL = `https://api.github.com/repos/${repoOwner}/${repoName}/commits`;
+            
+            try {
+                const response = await fetch(commitsURL);
+                const commits = await response.json();
+                if (commits.length > 0) {
+                    const lastUpdated = new Date(commits[0].commit.committer.date).toLocaleDateString('en-US');
+                    document.getElementById('lastUpdated').innerText = `LAST UPDATED: ${lastUpdated}`;
+                }
+            } catch (error) {
+                document.getElementById('lastUpdated').innerText = "LAST UPDATED: Error fetching date";
+            }
+        }
+        
         async function searchDatabase() {
             const query = document.getElementById('searchQuery').value;
             const repoOwner = 'AD-Drexen-Zikauni';
@@ -68,11 +85,14 @@
                 document.getElementById('result').innerHTML = "<p class='text-red-500'>Error fetching data.</p>";
             }
         }
+        
+        window.onload = fetchLastUpdated;
     </script>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
     <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
         <h1 class="text-2xl font-semibold text-center">Search Database</h1>
+        <p id="lastUpdated" class="text-center text-sm text-gray-600 mt-1">Fetching last update...</p>
         <p class="text-center text-sm text-gray-600 mt-1">Check out <a href="https://github.com/Drexen-Zikauni" class="text-blue-500 hover:underline">https://github.com/Drexen-Zikauni</a> for more releases in the future</p>
         <div class="mt-4">
             <input type="text" id="searchQuery" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter Roblox Username (CASE SENSITIVE)" />
