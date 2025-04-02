@@ -18,13 +18,13 @@
                 const commits = await response.json();
                 if (commits.length > 0) {
                     const lastUpdated = new Date(commits[0].commit.committer.date).toLocaleDateString('en-US');
-                    document.getElementById('lastUpdated').innerText = `LAST UPDATED: ${lastUpdated}`;
+                    document.getElementById('lastUpdated').innerHTML = `<strong>LAST UPDATED:</strong> <strong>${lastUpdated}</strong>`;
                 } else {
-                    document.getElementById('lastUpdated').innerText = "LAST UPDATED: No commits found";
+                    document.getElementById('lastUpdated').innerHTML = "<strong>LAST UPDATED:</strong> No commits found";
                 }
             } catch (error) {
                 console.error("Error fetching last updated:", error);
-                document.getElementById('lastUpdated').innerText = "LAST UPDATED: Error fetching date";
+                document.getElementById('lastUpdated').innerHTML = "<strong>LAST UPDATED:</strong> Error fetching date";
             }
         }
 
@@ -100,7 +100,7 @@
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
     <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
         <h1 class="text-2xl font-semibold text-center">Search Database</h1>
-        <p id="lastUpdated" class="text-center text-sm text-gray-600 mt-1">Fetching last update...</p>
+        <p id="lastUpdated" class="text-center text-sm text-gray-600 mt-1"><strong>LAST UPDATED:</strong> Fetching last update...</p>
         <p class="text-center text-sm text-gray-600 mt-1">
             Check out 
             <a href="https://github.com/Drexen-Zikauni" class="text-blue-500 hover:underline">
